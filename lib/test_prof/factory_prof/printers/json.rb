@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "test_prof/utils/html_builder"
+require "test_prof/utils/json_builder"
 
 module TestProf::FactoryProf
   module Printers

@@ -2,6 +2,7 @@
 
 require "test_prof/factory_prof/printers/simple"
 require "test_prof/factory_prof/printers/flamegraph"
+require "test_prof/factory_prof/printers/json"
 require "test_prof/factory_prof/factory_builders/factory_bot"
 require "test_prof/factory_prof/factory_builders/fabrication"
 
