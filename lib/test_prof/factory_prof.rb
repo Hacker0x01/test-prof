@@ -17,12 +17,24 @@ module TestProf
       attr_accessor :mode
 
       def initialize
-        @mode = ENV["FPROF"] == "flamegraph" ? :flamegraph : :simple
+        @mode = case ENV["FPROF"]
+          when "flamegraph"
+            :flamegraph
+          when "json"
+            :json
+          else
+            :simple
+          end
       end
 
       # Whether we want to generate flamegraphs
       def flamegraph?
         @mode == :flamegraph
+      end
+
+      # Whether we want to generate json
+      def json?
+        @mode == :json
       end
     end
 
@@ -82,7 +94,14 @@ module TestProf
       def run
         init
 
-        printer = config.flamegraph? ? Printers::Flamegraph : Printers::Simple
+        printer = case config.mode
+                  when :flamegraph
+                    Printers::Flamegraph
+                  when :json
+                    Printers::Json
+                  when :simple
+                    Printers::Simple
+                  end
 
         at_exit { printer.dump(result) }
 
