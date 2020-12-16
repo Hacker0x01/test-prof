@@ -4,7 +4,7 @@ require "test_prof/utils/html_builder"
 
 module TestProf::FactoryProf
   module Printers
-    module Flamegraph # :nodoc: all
+    module Json # :nodoc: all
       OUTPUT_NAME = "factory-prof.json"
 
       class << self
