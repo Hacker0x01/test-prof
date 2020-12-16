@@ -15,7 +15,7 @@ module TestProf::FactoryProf
 
           path = TestProf::Utils::JSONBuilder.generate(
             data: result.raw_stats,
-            output: "#{Time.now.to_i}-#{OUTPUT_NAME}"
+            output: OUTPUT_NAME
           )
 
           log :info, "FactoryJSON report generated: #{path}"
