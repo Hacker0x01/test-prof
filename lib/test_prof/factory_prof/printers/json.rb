@@ -14,7 +14,7 @@ module TestProf::FactoryProf
           return log(:info, "No factories detected") if result.raw_stats == {}
 
           path = TestProf::Utils::JSONBuilder.generate(
-            data: result.raw_stats,
+            data: result,
             output: OUTPUT_NAME
           )
 
