@@ -29,7 +29,7 @@ module TestProf
       end
 
       # Whether we want to generate flamegraphs
-      def flamegraph?
+      def include_stacks?
         @mode == :flamegraph
       end
 
@@ -125,7 +125,7 @@ module TestProf
       def track(factory)
         return yield unless running?
         @depth += 1
-        @current_stack << factory if config.flamegraph?
+        @current_stack << factory if config.include_stacks?
         @stats[factory][:total_count] += 1
         @stats[factory][:top_level_count] += 1 if @depth == 1
         t1 = TestProf.now
@@ -144,7 +144,7 @@ module TestProf
       private
 
       def reset!
-        @stacks = [] if config.flamegraph?
+        @stacks = [] if config.include_stacks?
         @depth = 0
         @stats = Hash.new do |h, k|
           h[k] = {
@@ -159,7 +159,7 @@ module TestProf
       end
 
       def flush_stack
-        return unless config.flamegraph?
+        return unless config.include_stacks?
         @stacks << @current_stack unless @current_stack.nil? || @current_stack.empty?
         @current_stack = []
       end
