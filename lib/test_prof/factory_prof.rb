@@ -2,6 +2,7 @@
 
 require "test_prof/factory_prof/printers/simple"
 require "test_prof/factory_prof/printers/flamegraph"
+require "test_prof/factory_prof/printers/json"
 require "test_prof/factory_prof/factory_builders/factory_bot"
 require "test_prof/factory_prof/factory_builders/fabrication"
 
@@ -17,12 +18,24 @@ module TestProf
       attr_accessor :mode
 
       def initialize
-        @mode = ENV["FPROF"] == "flamegraph" ? :flamegraph : :simple
+        @mode = case ENV["FPROF"]
+          when "flamegraph"
+            :flamegraph
+          when "json"
+            :json
+          else
+            :simple
+          end
       end
 
       # Whether we want to generate flamegraphs
-      def flamegraph?
+      def include_stacks?
         @mode == :flamegraph
+      end
+
+      # Whether we want to generate json
+      def json?
+        @mode == :json
       end
     end
 
@@ -82,7 +95,14 @@ module TestProf
       def run
         init
 
-        printer = config.flamegraph? ? Printers::Flamegraph : Printers::Simple
+        printer = case config.mode
+                  when :flamegraph
+                    Printers::Flamegraph
+                  when :json
+                    Printers::Json
+                  when :simple
+                    Printers::Simple
+                  end
 
         at_exit { printer.dump(result) }
 
@@ -105,7 +125,7 @@ module TestProf
       def track(factory)
         return yield unless running?
         @depth += 1
-        @current_stack << factory if config.flamegraph?
+        @current_stack << factory if config.include_stacks?
         @stats[factory][:total_count] += 1
         @stats[factory][:top_level_count] += 1 if @depth == 1
         t1 = TestProf.now
@@ -124,7 +144,7 @@ module TestProf
       private
 
       def reset!
-        @stacks = [] if config.flamegraph?
+        @stacks = [] if config.include_stacks?
         @depth = 0
         @stats = Hash.new do |h, k|
           h[k] = {
@@ -139,7 +159,7 @@ module TestProf
       end
 
       def flush_stack
-        return unless config.flamegraph?
+        return unless config.include_stacks?
         @stacks << @current_stack unless @current_stack.nil? || @current_stack.empty?
         @current_stack = []
       end
