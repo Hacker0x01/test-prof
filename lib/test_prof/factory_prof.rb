@@ -30,7 +30,7 @@ module TestProf
 
       # Whether we want to generate flamegraphs
       def include_stacks?
-        @mode == :flamegraph
+        @mode == :flamegraph || @mode == :json
       end
 
       # Whether we want to generate json
